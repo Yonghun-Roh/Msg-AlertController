@@ -50,10 +50,70 @@ class ViewController: UIViewController {
         self.present(alert, animated: false)
         
         
+        
     }
     
+    @IBAction func login(_ sender: Any) {
+        let title = "iTuens Store에 로그인"
+        let message = "사용자의 Apple ID sqlpro@naver.com의 암호를 입력해주십시오"
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        let ok = UIAlertAction(title:"확인", style: .default) { (_) in
+            // 확인 버튼을 클릭했을 때 처리할 내용
+            if let tf = alert.textFields?[0] {
+                print("입력된 값은 \( tf.text! )입니다. ")
+                
+            } else {
+                print("입력된 값이 없습니다.")
+            }
+        }
+        
+        
+        alert.addAction(cancel)
+        alert.addAction(ok)
+        
+        // 텍스트 필드 추가
+        alert.addTextField(configurationHandler: { (tf) in
+            // 텍스트필드의 속성설정
+            tf.placeholder = "암호" // 안내 메시지
+            tf.isSecureTextEntry = true // 비밀번호 처리 ***로 처리됨.
+            
+        })
+        
+        self.present(alert, animated: false)
+        
+    }
     
-
+    @IBAction func auth(_ sender: Any) {
+        // 메시지 창 관련 객체 정의
+        let msg = "로그인"
+        let alert = UIAlertController(title: nil, message: msg, preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        let ok = UIAlertAction(title: "확인", style: .default) { (_) in
+            // 확인 버튼을 클릭했을 때 실행할 내용
+            let loginId = alert.textFields?[0].text
+            let loginPw = alert.textFields?[1].text
+            
+            if loginId == "sqlpro" && loginPw == "1234" {
+                self.result.text = "인증되었습니다"
+            } else {
+                self.result.text = "인증에 실패하였습니다"
+            }
+        }
+        
+        //정의된 액션 버튼 객체를 메시지창에 추가
+        alert.addAction(cancel)
+        alert.addAction(ok)
+        
+        //아이디 필드 추가
+        alert.addTextField(configurationHandler: { (tf) in
+            tf.placeholder = "아이디"  // 미리 보여줄 안내 메시지
+            tf.isSecureTextEntry = true // 입력시 별표(*) 처리함
+        })
+        
+        self.present(alert, animated: false)
+    }
+    
 
 }
 
