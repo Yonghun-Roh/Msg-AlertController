@@ -6,13 +6,22 @@
 //
 
 import UIKit
+import UserNotifications
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        if #available(iOS 11.0, *) {
+            // 경고창, 배지, 사운드를 사용하는 알림 환경 정보를 생성하고, 사용자 동의 여부 창을 실행
+            let notiCenter = UNUserNotificationCenter.current()
+            notiCenter.requestAuthorization(options: [.alert, .badge, .sound]) { (didAllow, e) in }
+            notiCenter.delegate = self
+        } else {
+            
+        }
         // Override point for customization after application launch.
         return true
     }
@@ -40,11 +49,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 nContent.badge = 1
                 nContent.title = "로컬 알림 메시지"
                 nContent.subtitle = "준비된 내용이 아주 많아요! 얼른 다시 앱을 열어주세요!!"
+                nContent.body = "여기에 본 내용을 적습니다.nContent.body"
                 nContent.sound = UNNotificationSound.default
                 nContent.userInfo = ["name": "홍길동"]
                 
                 // 알림 발송 조건 객체
-                
+                // 알림 발송 시간을 설정. 여기서는 5초 후에 자동 발송되도록 설정.
+                // UserNotification에서 제공하는 객체는 두개. 하나는 UNTimeIntervalNotificationTrigger으로써 시간과 반복 여부를 설정. 입력값의 단위는 "초" 단위. 해당 예제는 5초 후에 알림 메시지를 발송하되 반복하지 말아라.
                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
                 
                 // 알림 요청 객체
@@ -65,3 +76,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+@available(iOS 10.0, *)
+func userNotificationCenter(_ center:UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    if notification.request.identifier == "wakeup" {
+        let userInfo = notification.request.content.userInfo
+        print(userInfo["name"]!)
+        
+    }
+    // 알림 배너 띄워주기
+    completionHandler([.banner, .badge, .sound])
+}
+ // 사용자가 알림 메시지를 클릭했을 경우
+
+@available(iOS 10.0, *)
+func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) { if response.notification.request.identifier == "wakeup" {
+    let userInfo = response.notification.request.content.userInfo
+    print(userInfo["name"]!)
+}
+    completionHandler()
+}
